@@ -16,3 +16,5 @@ app.use(
 app.use('/api', routes);
 
 app.listen(port, () => console.log(`Running local server on port ${port}`));
+
+module.exports.handler = app;
