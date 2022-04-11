@@ -34,7 +34,16 @@ const setup = (corsEnabled) => {
             })
         );
     } else {
-        app.use(cors());
+        app.use(
+            cors({
+                origin: [
+                    'https://dev.antalmanac.com',
+                    'https://www.dev.antalmanac.com',
+                    'http://localhost:3000'
+                ],
+                credentials: true
+            })
+        );
     }
 
     app.use('/api', routes);
