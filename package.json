@@ -12,6 +12,7 @@
         "prettier": "^2.5.1"
     },
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.67.0",
         "@vendia/serverless-express": "^4.5.4",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",

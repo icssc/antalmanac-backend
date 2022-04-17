@@ -44,9 +44,8 @@ const setup = (corsEnabled) => {
         app.use(
             cors({
                 origin: [
-                    'https://dev.antalmanac.com',
-                    'https://www.dev.antalmanac.com',
-                    'http://localhost:3000'
+                    /\.antalmanac\.com$/,
+                    /^http:\/\/localhost:\d*/
                 ],
                 credentials: true
             })
