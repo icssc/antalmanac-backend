@@ -8,12 +8,13 @@ const DynamoDBStore = require('dynamodb-store');
 
 require('dotenv').config();
 
-const setup = (isProd = false) => {
+const setup = (stage = "local") => {
+    stage = stage.toLowerCase();
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    if (isProd) {
+    if (stage.startsWith("prod")) {
         app.use(
             cors({
                 origin: [
@@ -29,7 +30,7 @@ const setup = (isProd = false) => {
             secret: process.env.SESSION_SECRET,
             resave: false,
             saveUninitialized: false,
-            cookie: { maxAge: 1000 * 60 * 60 * 24},
+            cookie: { maxAge: 1000 * 60 * 60 * 24, sameSite: 'strict', 'secure': true},
             store: new DynamoDBStore({
                 'table': {
                     'name': process.env.SESSION_DDB_NAME,
@@ -37,7 +38,7 @@ const setup = (isProd = false) => {
                 }
             })
         }));
-    } else {
+    } else if (stage.startsWith("dev")){
         app.use(
             cors({
                 origin: [
@@ -58,6 +59,29 @@ const setup = (isProd = false) => {
                     'ttl': 1000 * 60 * 60 * 24
                 }
             })
+        }));
+    }
+    else
+    {
+        app.use(
+            cors({
+                origin: [
+                    /^http:\/\/localhost:\d*/
+                ],
+                credentials: true
+            })
+        );
+        app.use(session({
+            secret: process.env.SESSION_SECRET,
+            resave: false,
+            saveUninitialized: false,
+            cookie: { maxAge: 1000 * 60 * 60 * 24},
+            // store: new DynamoDBStore({ //Uncomment to test db
+            //     'table': {
+            //         'name': process.env.SESSION_DDB_NAME,
+            //         'ttl': 1000 * 60 * 60 * 24
+            //     }
+            // })
         }));
     }
 

@@ -72,12 +72,10 @@ function successLogin(req, res) {
 /**
  * Endpoint to logout
  */
-router.get('/logout', function (req, res) {
+router.post('/logout', function (req, res) {
     console.log('Logging out', req.user);
     req.logout();
-    req.session.destroy(function (err) {
-        res.redirect('back');
-    });
+    req.status(200).send();
 });
 
 router.post('/loadUserData', async function (req, res) {
