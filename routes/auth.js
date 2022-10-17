@@ -1,7 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const connectToDb = require('../db');
-const User = require('../models/User');
+const { getById, insertById } = require('../ddb');
 
 const router = express.Router();
 
@@ -74,21 +73,24 @@ function successLogin(req, res) {
  */
 router.post('/logout', function (req, res) {
     console.log('Logging out', req.user);
-    req.logout();
-    req.status(200).send();
+    req.session.destroy(function (err) {
+        if (err) console.log(err);
+        // clear the user cookie
+        res.status(500).json({ error: err.message });
+        res.clearCookie('user');
+        res.redirect('back');
+      });
 });
 
 router.post('/loadUserData', async function (req, res) {
-    await connectToDb();
-
     try {
         if (req.isAuthenticated()) {
             const userID = req.user.id;
             console.log(userID)
-            const data = await User.findById(userID);
-            
+            const data = await getById(userID);
+
             if (data === null) res.status(500).send({ error: `User data for ${userID} not found` });
-            else res.status(200).send({ userID: data._id, userData: data.userData });
+            else res.status(200).send({ userID: data.id, userData: data.userData });
         } else {
             res.status(500).json({ error: 'User not authenticated' });
         }
@@ -98,15 +100,12 @@ router.post('/loadUserData', async function (req, res) {
 });
 
 router.post('/saveUserData', async function (req, res) {
-    await connectToDb();
-    
     try {
         if (req.isAuthenticated()) {
             const userID = req.user.id;
             const userData = req.body.userData;
             
-            console.log(userID)
-            await User.findByIdAndUpdate(userID, { $set: { _id: userID, userData: userData } }, { upsert: true });
+            await insertById(userID, userData);
         }
         res.status(200).send();
     } catch (err) {
