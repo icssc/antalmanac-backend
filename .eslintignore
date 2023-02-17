@@ -1,0 +1,20 @@
+# dev environment 
+node_modules/
+.turbo/
+build/
+.svelte-kit/
+
+stats.html
+static/
+
+# private
+.env
+
+# OS file system configs
+desktop.ini
+.DS_Store
+
+# ignore big dataset files
+*.csv
+*.zip
+*.tar
