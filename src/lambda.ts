@@ -6,7 +6,7 @@ let cachedHandler: Handler
 
 export async function handler(event: any, context: Context, callback: any) {
   if (!cachedHandler) {
-    const app = await start()
+    const app = await start(process.env.CORS_ENABLED === 'true')
     cachedHandler = serverlessExpress({ app })
   }
   return cachedHandler(event, context, callback)

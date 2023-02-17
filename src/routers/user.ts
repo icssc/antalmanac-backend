@@ -1,9 +1,9 @@
+import prisma from '$lib/db'
 import { z } from 'zod'
 import { router, procedure } from '../trpc'
-import User from '$models/User'
 
 const userDataSchema = z.object({
-  userId: z.string(),
+  id: z.string(),
   userData: z.any(),
 })
 
@@ -12,7 +12,11 @@ const userRouter = router({
    * load user data
    */
   load: procedure.input(z.string()).query(async ({ input }) => {
-    const data = await User.findById(input)
+    const data = await prisma.users.findFirst({
+      where: {
+        id: input,
+      },
+    })
     return data
   }),
 
@@ -20,8 +24,11 @@ const userRouter = router({
    * save user data
    */
   save: procedure.input(userDataSchema).mutation(async ({ input }) => {
-    const { userId, userData } = input
-    await User.findByIdAndUpdate(userId, { $set: { _id: userId, userData: userData } }, { upsert: true })
+    const { id, userData } = input
+    await prisma.users.update({
+      where: { id },
+      data: { userData },
+    })
   }),
 })
 

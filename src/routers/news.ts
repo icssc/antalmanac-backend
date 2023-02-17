@@ -1,12 +1,12 @@
 import { router, procedure } from '../trpc'
-import News from '$models/News'
+import prisma from '$lib/db'
 
 const newsRouter = router({
   /**
    * return all news
    */
   findAll: procedure.query(async () => {
-    const news = await News.find()
+    const news = await prisma.news.findMany()
     return news
   }),
 })

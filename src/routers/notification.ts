@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import Notification from '$models/Notification'
+import prisma from '$lib/db'
 import { router, procedure } from '../trpc'
 
 const notificationSchema = z.object({
@@ -13,11 +13,17 @@ const notificationRouter = router({
    * register for notifications
    */
   register: procedure.input(notificationSchema).mutation(async ({ input }) => {
-    const notification = await Notification.findOneAndUpdate(
-      { sectionCode: input.sectionCode, phoneNumber: input.phoneNumber },
-      { $addToSet: { phoneNumbers: input.phoneNumber } },
-      { upsert: true }
-    )
+    const notification = await prisma.notifications.create({
+      data: {
+        v: 123,
+        phoneNumbers: [input.phoneNumber],
+        sectionCode: input.sectionCode,
+        courseTitle: input.courseTitle,
+      },
+    })
+    // { sectionCode: input.sectionCode, phoneNumber: input.phoneNumber },
+    // { $addToSet: { phoneNumbers: input.phoneNumber } },
+    // { upsert: true }
     return notification
   }),
 
@@ -25,9 +31,15 @@ const notificationRouter = router({
    * find notifications
    */
   find: procedure.input(z.string()).query(async ({ input }) => {
-    const data = await Notification.find({ phoneNumbers: input })
-    const smsNotificationsList = data.map((section) => {
-      return { sectionCode: section.sectionCode, courseTitle: section.courseTitle }
+    const data = await prisma.notifications.findMany({
+      where: {
+        phoneNumbers: {
+          hasSome: [input],
+        },
+      },
+    })
+    const smsNotificationsList = data?.map((notification) => {
+      return { sectionCode: notification.sectionCode, courseTitle: notification.courseTitle }
     })
     return smsNotificationsList
   }),

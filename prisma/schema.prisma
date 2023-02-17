@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("AA_MONGODB_URI")
+}
+
+type UsersUserData {
+  addedCourses  UsersUserDataAddedCourses[]
+  customEvents  UsersUserDataCustomEvents[]
+  scheduleNames String[]
+}
+
+type UsersUserDataAddedCourses {
+  id              String? @map("_id") @db.ObjectId
+  color           String
+  scheduleIndices Int[]
+  sectionCode     String
+  term            String
+}
+
+type UsersUserDataCustomEvents {
+  id              String?   @map("_id") @db.ObjectId
+  color           String
+  customEventID   String
+  days            Boolean[]
+  end             String
+  scheduleIndices Int[]
+  start           String
+  title           String
+}
+
+model chunks {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  chunks Json
+  date   String
+}
+
+model enrollment_data {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model news {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model notifications {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  v            Int      @map("__v")
+  courseTitle  String
+  phoneNumbers String[]
+  sectionCode  String
+}
+
+model users {
+  id       String        @id @map("_id")
+  v        Int?          @map("__v")
+  userData UsersUserData
+}

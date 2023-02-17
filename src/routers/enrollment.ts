@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import EnrollmentData from '$models/EnrollmentData'
+import prisma from '$lib/db'
 import { router, procedure } from '../trpc'
 
 const enrollmentSchema = z.object({
@@ -12,12 +12,15 @@ const enrollmentRouter = router({
   /**
    * find a user's enrollment data
    */
-  find: procedure.input(enrollmentSchema).query(async ({ input }) => {
-    const quarter = input.pastTerm.split(' ')[1].toLowerCase()
-    const year = input.pastTerm.split(' ')[0]
-    const sectionCode = input.sectionCode
+  find: procedure.input(enrollmentSchema).query(async () => {
+    // const quarter = input.pastTerm.split(' ')[1].toLowerCase()
+    // const year = input.pastTerm.split(' ')[0]
+    // const sectionCode = input.sectionCode
 
-    const enrollmentData = await EnrollmentData.find({ quarter, year, sectionCode })
+    /**
+     * TODO: no quarter, year, or sectionCode in MongoDB
+     */
+    const enrollmentData = await prisma.enrollment_data.findMany()
     return enrollmentData
   }),
 })
