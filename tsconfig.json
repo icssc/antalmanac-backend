@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "NodeNext",
+    "module": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
@@ -9,7 +9,7 @@
     "baseUrl": ".",
     "outDir": "dist",
     "paths": {
-      "$lib/*": ["./src/lib/*"]
+      "$lib/*": ["./src/lib/*"],
       "$models/*": ["./src/models/*"]
     }
   }

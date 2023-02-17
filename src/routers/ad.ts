@@ -1,19 +1,22 @@
 import { z } from 'zod'
 import { router, procedure } from '../trpc'
+import catalogue from '../assets/ads/catalogue'
 
 const adRouter = router({
   /**
-   * given a name, return the correspond ad image
-   */
-  getByName: procedure.input(z.string()).query(async ({ input }) => {
-    return `Your ad is ${input}`
-  }),
-
-  /**
    * return a random ad image
    */
-  getRandom: procedure.query(async () => {
-    return `Your random ad is ${Math.random()}`
+  getRandom: procedure.input(z.string().optional()).query(async ({ input }) => {
+    const currentDate = new Date().toISOString().slice(0, 10)
+
+    const matchingAds = catalogue
+      .filter((c) => c.endDate == null || currentDate <= c.endDate)
+      .filter((c) => c.dept.includes('any') || c.dept.includes(input || ''))
+      .map((c) => ({ name: c.bannerName, link: c.url }))
+
+    const randomIndex = Math.floor(Math.random() * matchingAds.length)
+
+    return matchingAds[randomIndex]
   }),
 })
 
