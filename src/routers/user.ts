@@ -8,12 +8,18 @@ const userDataSchema = z.object({
 })
 
 const userRouter = router({
-  loadUserData: procedure.input(z.string()).query(async ({ input }) => {
+  /**
+   * load user data
+   */
+  load: procedure.input(z.string()).query(async ({ input }) => {
     const data = await User.findById(input)
     return data
   }),
 
-  saveUserData: procedure.input(userDataSchema).mutation(async ({ input }) => {
+  /**
+   * save user data
+   */
+  save: procedure.input(userDataSchema).mutation(async ({ input }) => {
     const { userId, userData } = input
     await User.findByIdAndUpdate(userId, { $set: { _id: userId, userData: userData } }, { upsert: true })
   }),
