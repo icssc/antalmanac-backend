@@ -3,10 +3,10 @@ const fetch = require('node-fetch');
 const router = express.Router();
 const zotcourseUrl = 'https://zotcourse.appspot.com/schedule/load';
 
-router.get('/:scheduleName', async (req, res) => {
+router.post('/loadUserData', async (req, res) => {
     try {
         let url = new URL(zotcourseUrl);
-        url.searchParams.append('username', req.params['scheduleName']);
+        url.searchParams.append('username', req.body.scheduleName);
         const response = await fetch(url);
         const data = await response.json();
         res.status(200).json(data);
